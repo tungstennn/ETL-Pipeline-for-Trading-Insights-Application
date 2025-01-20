@@ -53,8 +53,7 @@ graph TD
     B -- Yes --> C[Pandas DataFrame]
     B -- No --> G[Wait for Next Interval]
     C --> D[Insert into PostgreSQL Table]
-    D --> E[Pagila Database]
-    E --> F[Retrieve Data from SQL]
+    D --> F[Retrieve Data from SQL]
     F --> H[Plots]
     H --> I[Streamlit Visualization]
     G -->|Check Again| A
