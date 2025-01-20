@@ -45,22 +45,18 @@ The goal of this MVP is to create a simple yet effective data pipeline that extr
 
 ---
 
-## Data Flow with Scheduled Updates
+# Dataflow Diagram
 
 ```mermaid
 graph TD
-    A[Twelve Data API] -->|Fetch Data Hourly| B(Pandas DataFrame)
-    B -->|Transform| C(Denormalized OLAP Table)
-    C -->|Store| D[CSV File]
-    D -->|Load| E[Streamlit Visualization]
+    A[Twelve Data API] -->|API Call| B{New Data?}
+    B -- Yes --> C[Pandas DataFrame]
+    B -- No --> G[Wait for Next Interval]
+    C --> D[Insert into PostgreSQL Table]
+    D --> E[Pagila Database]
+    E --> F[Retrieve Data from SQL]
+    F --> H[Plots]
+    H --> I[Streamlit Visualization]
+    G -->|Check Again| A
 
-    subgraph Update Process
-        F[Scheduled Check Every Hour]
-        F --> G{Is New Data Found?}
-        G -- Yes --> A
-        G -- No --> H[Wait for Next Interval]
-    end
-
-    D -->|Read Existing Data| E
-    E -->|Auto-Refresh Every Minute| E
 
