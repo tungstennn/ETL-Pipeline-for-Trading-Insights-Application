@@ -77,7 +77,7 @@ The goal of this MVP is to create an end-to-end data pipeline that extracts fina
 
 ---
 
-## Updated Data Flow Process
+## Data Flow Process
 
 ```mermaid
 graph TD
