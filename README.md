@@ -1,61 +1,62 @@
-# CapstoneProject
-
 # Minimal Viable Product (MVP) Requirements
 
 ## Overview
-The goal of this MVP is to create a simple yet effective data pipeline that extracts financial data from the Twelve Data API, processes it, and provides hourly visualization using Streamlit. This will help validate the feasibility of the project before scaling it further.
+The goal of this MVP is to create an end-to-end data pipeline that extracts financial data from the Twelve Data API, processes it, and provides real-time visualization using Streamlit. The transformed data will be stored in a PostgreSQL database (Pagila schema) for future scalability and analysis.
+
+---
 
 ## Requirements
 
-### 1. **Data Extraction (Highly Normalised)**
-- **Source:** Twelve Data API
-- **Scope:** Cryptocurrency and sales data
+### 1. **Data Extraction (OLTP-Style Data)**
+- **Source:** Twelve Data API (Cryptocurrency & Sales Data)
 - **Frequency:** Hourly updates
 - **Format:** JSON response converted to Pandas DataFrame
-- **Storage:** Local storage (CSV)
+- **Storage:** Initially stored in Pandas for transformation
+- **Why OLTP-Style?**  
+  The data retrieved from the API is highly normalized, similar to an OLTP system, making it suitable for transactional operations but inefficient for analytical queries.
 
-### 2. **Data Transformation (OLAP Conversion)**
-- **Objective:** Convert extracted normalised data into a OLAP (denormalized format) suitable for analysis.
-- **Reasoning:**  
-  - OLTP (Online Transaction Processing) data structures are highly normalized, optimized for quick write operations, and contain many related tables.
-  - Analysts require fast querying without complex joins, which is best achieved by converting to an OLAP (Online Analytical Processing) format—denormalized for faster read operations and easier analysis.
-  - This transformation will aggregate key metrics and create a single wide table for visualization.
+---
 
-### 3. **Data Loading and Visualization**
+### 2. **Data Transformation (Denormalization for OLAP)**
+- **Objective:** Convert normalized OLTP-style data into a denormalized OLAP table.
+- **Operations:**
+  - Join related data fields to create a flat, analysis-friendly table.
+  - Calculate aggregate values such as averages, price changes, etc.
+  - Format data for easier querying by analysts.
+- **Why OLAP?**  
+  The denormalization process helps improve query performance, reducing the need for complex joins and making data more accessible for analytics.
+
+---
+
+### 3. **Data Storage (PostgreSQL - Pagila Schema)**
+- **Database:** PostgreSQL (using Pagila schema)
+- **Tables:** Store denormalized data for efficient querying
+- **Usage:** Data analysts can access structured data via SQL for reporting and insights.
+
+---
+
+### 4. **Visualization (Real-Time Updates with Streamlit)**
 - **Visualization Tool:** Streamlit
-- **Purpose:** Hourly monitoring of trends and insights
-- **Metrics Displayed:** Price movements, averages, comparisons
-- **Data Refresh Interval:** Every minute
+- **Purpose:** Present real-time insights using dynamic charts and dashboards
+- **Metrics Displayed:**
+  - Stock/crypto trends
+  - Comparative analysis
+  - Moving averages and key indicators
+- **Update Frequency:** Dashboard refreshes every minute (or configurable interval)
+
+---
+
+### 5. **Automation**
+- **Scheduling:** Automate data extraction and transformation process.
+- **Tools:** AWS Lambda or cron jobs for periodic updates.
+- **Goal:** Ensure continuous data refresh without manual intervention.
 
 ---
 
 ## Goals of the MVP
 
-1. **Prove Feasibility:**  
-   - Demonstrate that we can successfully fetch and visualize data hourly.
-
-2. **Simplify Data for Analysis:**  
-   - Transform normalized OLTP data into a flat, denormalized OLAP structure.
-
-3. **Quick Insights:**  
-   - Allow analysts to view key insights without complex queries.
-
-4. **Automation:**  
-   - Automate data extraction and visualization to reflect live updates.
-
----
-
-# Dataflow Diagram
-
-```mermaid
-graph TD
-    A[Twelve Data API] -->|API Call| B{New Data?}
-    B -- Yes --> C[Pandas DataFrame]
-    B -- No --> G[Wait for Next Interval]
-    C --> D[Insert into PostgreSQL Table]
-    D --> F[Retrieve Data from SQL]
-    F --> H[Plots]
-    H --> I[Streamlit Visualization]
-    G -->|Check Again| A
+1. **Establish a Basic Data Pipeline:**  
+   - Successfully extract, transform, and store financial data.
+   - Ensure end-to
 
 
