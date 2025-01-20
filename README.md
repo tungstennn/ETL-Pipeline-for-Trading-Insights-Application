@@ -57,6 +57,37 @@ The goal of this MVP is to create an end-to-end data pipeline that extracts fina
 
 1. **Establish a Basic Data Pipeline:**  
    - Successfully extract, transform, and store financial data.
-   - Ensure end-to
+   - Ensure end-to-end data flow from API to PostgreSQL and visualization.
 
+2. **Enable Data-Driven Insights:**  
+   - Provide a single source of truth through the PostgreSQL database.
+   - Ensure easy access for analysts to derive insights.
+
+3. **Optimize Query Performance:**  
+   - Transition from OLTP-style to OLAP structure for faster querying.
+   - Ensure minimal response times in dashboards.
+
+4. **Real-Time Visualization:**  
+   - Deliver up-to-date metrics using Streamlit for financial insights.
+   - Automate refresh intervals to avoid manual intervention.
+
+5. **Scalability for Future Enhancements:**  
+   - Design the MVP with scalability in mind for further enhancements.
+   - Potential future migration to cloud-based data warehouses like Redshift.
+
+---
+
+## Updated Data Flow Process
+
+```mermaid
+graph TD
+    A[Twelve Data API] -->|API Call| B{New Data?}
+    B -- Yes --> C[Pandas DataFrame]
+    B -- No --> G[Wait for Next Interval]
+    C --> D[Insert into PostgreSQL Table]
+    D --> E[Pagila Database]
+    E --> F[Retrieve Data from SQL]
+    F --> H[Plots]
+    H --> I[Streamlit Visualization]
+    G -->|Check Again| A
 
