@@ -1,8 +1,14 @@
 import requests
 import pandas as pd
+import os
+from dotenv import load_dotenv
+
+# Load variables from .env file
+load_dotenv()
 
 # Replace with your API key
-API_KEY = "a33dcb921c7e47938c2c3f9fc1dede2f"
+# call API key from the environment variable
+API_KEY = os.getenv('API_KEY')
 BTC_symbol = "BTC/GBP"
 ETH_symbol = "ETH/GBP"
 
