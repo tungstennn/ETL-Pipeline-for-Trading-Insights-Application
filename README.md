@@ -48,7 +48,7 @@ The goal of this MVP is to create an end-to-end data pipeline that extracts fina
 
 ### 5. **Automation**
 - **Scheduling:** Automate data extraction and transformation process.
-- **Tools:** AWS Lambda or cron jobs for periodic updates.
+- **Tools:** Cron jobs for periodic updates.
 - **Goal:** Ensure continuous data refresh without manual intervention.
 
 ---
