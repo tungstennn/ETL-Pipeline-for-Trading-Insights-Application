@@ -1,36 +1,36 @@
 # Minimal Viable Product (MVP) Requirements
 
 ## Overview
-The goal is to pull in data from the Twelve Data API to obtain some stocks and crypto data. I then transform them locally so and combine them to obtain a single source of truth (SSOT). I then load this into postgres pagila db, the code the update the db runs periodically (hourly). Finally I pull the data out and make some visualisations using streamlit.
+The goal is to pull in data from the Twelve Data API to obtain some stocks and crypto data. I then transform them locally and combine them to obtain a single source of truth (SSOT). I then load this into the PostgreSQL Pagila database, with the code to update the database running periodically (hourly). Finally, I pull the data out and make some visualizations using Streamlit.
 
 ---
 
 ## Requirements
 
-### 1. **Data Extraction (OLTP-Style Data)**
+### 1. **Data Extraction**
 - **Source:** Twelve Data API (Cryptocurrency & Stocks Data)
 - **Frequency:** Hourly updates
 - **Format:** JSON response converted to Pandas DataFrame
 - **Storage:** Initially stored in Pandas for transformation
-- **Why OLTP-Style?**  
-  The data retrieved from the API is highly normalized, similar to an OLTP system, making it suitable for transactional operations but inefficient for analytical queries.
+- **Why Normalized?**  
+  The data retrieved from the API is highly normalized, making it suitable for transactional operations but less efficient for analytical queries.
 
 ---
 
-### 2. **Data Transformation (Denormalization for OLAP)**
-- **Objective:** Convert normalized OLTP-style data into a denormalized OLAP table.
+### 2. **Data Transformation**
+- **Objective:** Transform the normalized data to create a consolidated single source of truth (SSOT).
 - **Operations:**
-  - Join related data fields to create a flat, analysis-friendly table.
+  - Combine related data fields to create an analysis-friendly dataset.
   - Calculate aggregate values such as averages, price changes, etc.
   - Format data for easier querying by analysts.
-- **Why OLAP?**  
-  The denormalization process helps improve query performance, reducing the need for complex joins and making data more accessible for analytics.
+- **Why SSOT?**  
+  The transformation process helps improve data accessibility and consistency, reducing the need for complex joins and enabling a unified view of the data.
 
 ---
 
 ### 3. **Data Storage (PostgreSQL - Pagila Schema)**
 - **Database:** PostgreSQL (using Pagila schema)
-- **Tables:** Store denormalized data for efficient querying
+- **Tables:** Store consolidated SSOT data for efficient querying
 - **Usage:** Data analysts can access structured data via SQL for reporting and insights.
 
 ---
@@ -57,7 +57,7 @@ The goal is to pull in data from the Twelve Data API to obtain some stocks and c
    - Ensure easy access for analysts to derive insights.
 
 3. **Optimize Query Performance:**  
-   - Transition from OLTP-style to OLAP structure for faster querying.
+   - Improve data structure for faster querying.
    - Ensure minimal response times in dashboards.
 
 4. **Real-Time Visualization:**  
@@ -79,4 +79,5 @@ graph TD
     F --> H[Plots]
     H --> I[Streamlit Visualization]
     G -->|Check Again| A
+```
 
