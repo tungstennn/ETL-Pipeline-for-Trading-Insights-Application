@@ -9,26 +9,30 @@ from etl.load import save_to_db
 # Load variables from .env file
 load_dotenv()
 
-# Replace with your API key
-# call API key from the environment variable
 API_KEY = os.getenv('API_KEY')
 
-interval = "1h"     # Hourly data
+interval = "30min"     # Hourly data
 
 # Get data
 tech_stocks = ['AAPL', 'GOOGL', 'AMZN', 'META']
-crypto = ['BTC/GBP', 'ETH/GBP', 'SOL/GBP']
+crypto = ['BTC/USD', 'ETH/USD', 'SOL/USD']
 
 all_assets = tech_stocks + crypto
 
 dataframes = []
+
+# Extract
 
 for asset in all_assets:
     df = get_12_data(asset, interval)
     if df is not None:
         dataframes.append(df)
 
+# Transform
+
 final_df = combine_dataframes(dataframes)
+
+# Load
 
 save_to_db(final_df, "abdirahmans_market_data")
 

@@ -7,17 +7,11 @@ import psycopg2
 # Load variables from .env file
 load_dotenv()
 
-# Replace with your API key
-# call API key from the environment variable
-API_KEY = os.getenv('API_KEY')
-BTC_symbol = "BTC/GBP"
-ETH_symbol = "ETH/GBP"
-
-interval = "1h"     # Hourly data
-
+#interval = "1h"     # Hourly data
 
 # Function to get data
 def get_12_data(symbol, interval):
+    API_KEY = os.getenv('API_KEY')
     # API Endpoint
     url = f"https://api.twelvedata.com/time_series?symbol={symbol}&interval={interval}&apikey={API_KEY}"
 

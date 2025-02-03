@@ -22,14 +22,6 @@ with st.sidebar:
         default_index=0,
     )
 
-# AAPL_df = get_data_from_db("SELECT * FROM abdirahmans_market_data WHERE symbol = 'AAPL';")
-# GOOGL_df = get_data_from_db("SELECT * FROM abdirahmans_market_data WHERE symbol = 'GOOGL';")
-# AMZN_df = get_data_from_db("SELECT * FROM abdirahmans_market_data WHERE symbol = 'AMZN';")
-# META_df = get_data_from_db("SELECT * FROM abdirahmans_market_data WHERE symbol = 'META';")
-# BTC_df = get_data_from_db("SELECT * FROM abdirahmans_market_data WHERE symbol = 'BTC/GBP';")
-# ETH_df = get_data_from_db("SELECT * FROM abdirahmans_market_data WHERE symbol = 'ETH/GBP';")
-# SOL_df = get_data_from_db("SELECT * FROM abdirahmans_market_data WHERE symbol = 'SOL/GBP';")
-
 stocks_df = get_data_from_db("SELECT * FROM abdirahmans_market_data where volume is not null;")
 crypto_df = get_data_from_db("SELECT * FROM abdirahmans_market_data where volume is null;")
 combined_df = get_data_from_db("SELECT * FROM abdirahmans_market_data;")
@@ -39,7 +31,19 @@ combined_df['datetime'] = pd.to_datetime(combined_df['datetime'])
 # -------------------- KPIs --------------------
 
 # 1. Total Market Cap (using the sum of 'close' prices as a proxy)
-total_market_cap = combined_df.groupby('symbol')['close'].last().sum()
+# total_market_cap = combined_df.groupby('symbol')['close'].last().sum()
+
+# 2. % Gain Over the Last 30 Days
+combined_df['date'] = pd.to_datetime(combined_df['datetime']).dt.date
+latest_prices = combined_df.groupby('symbol')['close'].last()
+initial_prices = combined_df.groupby('symbol')['close'].first()
+
+performance = ((latest_prices - initial_prices) / initial_prices) * 100
+best_performer = performance.idxmax()
+best_performance_value = performance.max()
+
+# st.metric("🚀 Best Performer", f"{best_performer}", f"+{best_performance_value:.2f}%")
+
 
 # 2. Average Daily Volume
 combined_df['date'] = combined_df['datetime'].dt.date
@@ -51,26 +55,30 @@ top_gainer_row = combined_df.loc[combined_df['price_change_pct'].idxmax()]
 top_gainer = top_gainer_row['symbol']
 top_gainer_change = top_gainer_row['price_change_pct']
 
-# -------------------- Display KPIs --------------------
+# --------------------- Display KPIs ---------------------
 st.title("📊 Market Overview")
 
 col1, col2, col3 = st.columns(3)
-col1.metric("Total Market Cap", f"${total_market_cap/1e9:.2f}B")
+col1.metric("🚀 Best Performer", f"{best_performer}", f"+{best_performance_value:.2f}%")
 col2.metric("Avg Daily Volume", f"${average_daily_volume/1e6:.2f}M")
 col3.metric("Top Gainer", f"{top_gainer}", f"+{top_gainer_change:.2f}%")
 
 # -------------------- Market Trends Line Chart --------------------
 st.subheader("📊 Market Trends Overview")
 
+col1, col2 = st.columns(2)
+
 # Tech Stocks Trend
-st.write("💻 Tech Stocks")
-tech_trend = stocks_df.pivot_table(index='datetime', columns='symbol', values='close').fillna(method='ffill')
-st.line_chart(tech_trend)
+with col1:
+    st.write("💻 Tech Stocks")
+    tech_trend = stocks_df.pivot_table(index='datetime', columns='symbol', values='close').fillna(method='ffill')
+    st.line_chart(tech_trend)
 
 # Crypto Trend
-st.write("₿ Crypto Trends")
-crypto_trend = crypto_df.pivot_table(index='datetime', columns='symbol', values='close').fillna(method='ffill')
-st.line_chart(crypto_trend)
+with col2:
+    st.write("₿ Crypto Trends")
+    crypto_trend = crypto_df.pivot_table(index='datetime', columns='symbol', values='close').fillna(method='ffill')
+    st.line_chart(crypto_trend)
 
 # Pivot data for line chart
 trend_data = combined_df.pivot_table(index='datetime', columns='symbol', values='close').fillna(method='ffill')
