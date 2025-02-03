@@ -1,7 +1,7 @@
 # Minimal Viable Product (MVP) Requirements
 
 ## Overview
-The goal of this MVP is to create an end-to-end data pipeline that extracts financial data from the Twelve Data API, processes it, and provides real-time visualization using Streamlit. The transformed data will be stored in a PostgreSQL database (Pagila schema) for future scalability and analysis.
+The goal is to pull in data from the Twelve Data API to obtain some stocks and crypto data. I then transform them locally so and combine them to obtain a single source of truth (SSOT). I then load this into postgres pagila db, the code the update the db runs periodically (hourly). Finally I pull the data out and make some visualisations using streamlit.
 
 ---
 
