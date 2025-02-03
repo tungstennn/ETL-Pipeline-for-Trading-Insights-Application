@@ -8,7 +8,7 @@ The goal of this MVP is to create an end-to-end data pipeline that extracts fina
 ## Requirements
 
 ### 1. **Data Extraction (OLTP-Style Data)**
-- **Source:** Twelve Data API (Cryptocurrency & Sales Data)
+- **Source:** Twelve Data API (Cryptocurrency & Stocks Data)
 - **Frequency:** Hourly updates
 - **Format:** JSON response converted to Pandas DataFrame
 - **Storage:** Initially stored in Pandas for transformation
@@ -46,13 +46,6 @@ The goal of this MVP is to create an end-to-end data pipeline that extracts fina
 
 ---
 
-### 5. **Automation**
-- **Scheduling:** Automate data extraction and transformation process.
-- **Tools:** Cron jobs for periodic updates.
-- **Goal:** Ensure continuous data refresh without manual intervention.
-
----
-
 ## Goals of the MVP
 
 1. **Establish a Basic Data Pipeline:**  
@@ -70,10 +63,6 @@ The goal of this MVP is to create an end-to-end data pipeline that extracts fina
 4. **Real-Time Visualization:**  
    - Deliver up-to-date metrics using Streamlit for financial insights.
    - Automate refresh intervals to avoid manual intervention.
-
-5. **Scalability for Future Enhancements:**  
-   - Design the MVP with scalability in mind for further enhancements.
-   - Potential future migration to cloud-based data warehouses like Redshift.
 
 ---
 
