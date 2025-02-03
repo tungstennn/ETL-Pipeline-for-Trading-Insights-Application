@@ -12,8 +12,6 @@ The goal is to pull in data from the Twelve Data API to obtain some stocks and c
 - **Frequency:** Hourly updates
 - **Format:** JSON response converted to Pandas DataFrame
 - **Storage:** Initially stored in Pandas for transformation
-- **Why Normalized?**  
-  The data retrieved from the API is highly normalized, making it suitable for transactional operations but less efficient for analytical queries.
 
 ---
 
