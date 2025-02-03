@@ -60,10 +60,6 @@ The goal is to pull in data from the Twelve Data API to obtain some stocks and c
    - Improve data structure for faster querying.
    - Ensure minimal response times in dashboards.
 
-4. **Real-Time Visualization:**  
-   - Deliver up-to-date metrics using Streamlit for financial insights.
-   - Automate refresh intervals to avoid manual intervention.
-
 ---
 
 ## Data Flow Process
