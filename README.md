@@ -4,6 +4,8 @@
 The goal is to pull in data from the Twelve Data API to obtain some stocks and crypto data. I then transform them locally and combine them to obtain a single source of truth (SSOT). I then load this into the PostgreSQL Pagila database, with the code to update the database running periodically (hourly). Finally, I pull the data out and make some visualizations using Streamlit.
 
 ---
+### To Run ETL pipeline:
+- on the root folder, run 'python -m scripts.run_etl`. The scheduler should run hourly
 
 ## Requirements
 
