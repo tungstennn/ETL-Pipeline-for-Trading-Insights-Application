@@ -2,6 +2,7 @@ import requests
 import pandas as pd
 import os
 from dotenv import load_dotenv
+import psycopg2
 
 # Load variables from .env file
 load_dotenv()
@@ -15,7 +16,7 @@ ETH_symbol = "ETH/GBP"
 interval = "1h"     # Hourly data
 
 
-# Function to get crypto data
+# Function to get data
 def get_12_data(symbol, interval):
     # API Endpoint
     url = f"https://api.twelvedata.com/time_series?symbol={symbol}&interval={interval}&apikey={API_KEY}"
@@ -33,8 +34,14 @@ def get_12_data(symbol, interval):
     else:
         return "Error:", data.get("message", "Unknown error")
 
-    
-# List of symbols
-tech_stocks = ["AAPL", "GOOGL", "MSFT", "AMZN", "FB"]
-finance_stocks = ["JPM", "BAC", "GS", "MS", "WFC"]
-crypto = ["BTC/GBP", "ETH/GBP", "BNB/GDP"]
+def get_data_from_db(query):
+    conn = psycopg2.connect(
+        host=os.getenv("DB_host"),
+        database=os.getenv("DB_name"),
+        user=os.getenv("DB_username"),
+        password=os.getenv("DB_password"),
+        port=os.getenv("DB_port")  # Default is usually 5432
+    )
+    df = pd.read_sql_query(query, conn)
+    conn.close()
+    return df

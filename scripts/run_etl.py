@@ -13,7 +13,7 @@ load_dotenv()
 # call API key from the environment variable
 API_KEY = os.getenv('API_KEY')
 
-interval = "30min"     # Hourly data
+interval = "1h"     # Hourly data
 
 # Get data
 tech_stocks = ['AAPL', 'GOOGL', 'AMZN', 'META']

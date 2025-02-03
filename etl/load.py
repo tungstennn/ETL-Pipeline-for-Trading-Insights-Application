@@ -76,3 +76,4 @@ def save_to_db(df, table_name="market_data"):
 
     cur.close()
     conn.close()
+
