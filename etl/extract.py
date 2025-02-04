@@ -24,6 +24,8 @@ def get_12_data(symbol, interval):
         df = pd.DataFrame(data["values"])
         df["datetime"] = pd.to_datetime(df["datetime"])
         df["symbol"] = symbol
+        # Hardcoded Filter to Exclude GBP Crypto
+        df = df[~df['symbol'].str.contains('/GBP')]
         return df
     else:
         return "Error:", data.get("message", "Unknown error")
