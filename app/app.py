@@ -170,7 +170,7 @@ elif selected == "Tech Stocks":
     stock_data['datetime'] = pd.to_datetime(stock_data['datetime'])
     stock_data = stock_data.sort_values('datetime')
     
-    # ✅ 1. Key Metrics (KPIs)
+    # 1. Key Metrics (KPIs)
     latest_data = stock_data.iloc[-1]
     price_change = ((latest_data['close'] - stock_data.iloc[-2]['close']) / stock_data.iloc[-2]['close']) * 100
 
@@ -180,11 +180,11 @@ elif selected == "Tech Stocks":
     col2.metric("24H Volume", f"{latest_data['volume'] / 1e6:.2f}M")
     col3.metric("All-Time High", f"${stock_data['close'].max():.2f}")
     
-    # ✅ 2. Price Trend Analysis
+    # 2. Price Trend Analysis
     st.subheader("📊 Price Trend Over Time")
     st.line_chart(stock_data.set_index('datetime')['close'])
 
-    # ✅ 3. Moving Averages
+    # 3. Moving Averages
     st.subheader("📉 Moving Averages (7 & 30 Day)")
 
     stock_data['7-Day SMA'] = stock_data['close'].rolling(window=7).mean()
@@ -192,7 +192,7 @@ elif selected == "Tech Stocks":
 
     st.line_chart(stock_data.set_index('datetime')[['close', '7-Day SMA', '30-Day SMA']])
     
-    # ✅ 4. Performance Comparison of All Tech Stocks
+    # 4. Performance Comparison of All Tech Stocks
     st.subheader("📊 Stock Performance Comparison")
 
     # Calculate % change over the last 30 days for all stocks
