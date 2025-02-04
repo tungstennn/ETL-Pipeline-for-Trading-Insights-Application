@@ -4,6 +4,8 @@ import os
 # Add the project root to sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from etl.extract import get_data_from_db
+from etl.extract import fetch_news
+from etl.transform import analyze_sentiment
 import psycopg2
 from dotenv import load_dotenv
 import streamlit_option_menu
@@ -12,6 +14,8 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
+from textblob import TextBlob
+
 
 load_dotenv()
 
@@ -24,9 +28,9 @@ with st.sidebar:
         default_index=0,
     )
 
-stocks_df = get_data_from_db("SELECT * FROM abdirahmans_market_data where volume is not null;")
-crypto_df = get_data_from_db("SELECT * FROM abdirahmans_market_data where volume is null;")
-combined_df = get_data_from_db("SELECT * FROM abdirahmans_market_data;")
+stocks_df = get_data_from_db("SELECT * FROM abdirahmans_market_data WHERE (volume is not null) AND (symbol NOT LIKE '%/GBP');")
+crypto_df = get_data_from_db("SELECT * FROM abdirahmans_market_data where (volume is null) AND (symbol NOT LIKE '%/GBP');")
+combined_df = get_data_from_db("SELECT * FROM abdirahmans_market_data WHERE (symbol NOT LIKE '%/GBP');")
 # Ensure datetime column is in datetime format
 combined_df['datetime'] = pd.to_datetime(combined_df['datetime'])
 
@@ -76,7 +80,7 @@ if selected == "Market Overview":
     with col1:
         st.write("💻 Tech Stocks")
         tech_trend = stocks_df.pivot_table(index='datetime', columns='symbol', values='close').fillna(method='ffill')
-        st.line_chart(tech_trend)
+        st.line_chart(tech_trend) 
 
     # Crypto Trend
     with col2:
@@ -108,7 +112,7 @@ elif selected == "Crypto Trends":
         crypto = latest_data[latest_data['symbol'] == symbol].iloc[0]
         price_change = ((crypto['close'] - crypto['open']) / crypto['open']) * 100
 
-        col1, col2, col3 = st.columns(3)
+        col1, col3 = st.columns(2)
         col1.metric(f"{symbol} Price", f"${crypto['close']:.2f}", f"{price_change:.2f}%")
         #col2.metric("24H Volume", f"{crypto['volume'] / 1e6:.2f}M")
         col3.metric("24H High/Low", f"${crypto['high']:.2f} / ${crypto['low']:.2f}")
@@ -119,13 +123,7 @@ elif selected == "Crypto Trends":
     price_trend = crypto_df.pivot_table(index='datetime', columns='symbol', values='close').fillna(method='ffill')
     st.line_chart(price_trend)
 
-    # st.subheader("⚡ Volatility Analysis")
-
-    # # Volatility Calculation
-    # volatility = crypto_df.groupby('symbol')['close'].rolling(window=7).std().reset_index()
-    # volatility_pivot = volatility.pivot(index='datetime', columns='symbol', values='close')
-
-    # st.line_chart(volatility_pivot)
+    #s t.subheader("⚡ Volatility Analysis")
 
     # st.subheader("🔗 Correlation Between Cryptos")
 
@@ -137,4 +135,114 @@ elif selected == "Crypto Trends":
     # sns.heatmap(corr_matrix, annot=True, cmap="coolwarm", ax=ax)
     # st.pyplot(fig)
     
+    st.subheader("📊 Moving Averages Analysis")
+
+    # User selection for crypto asset
+    selected_crypto = st.selectbox("Select Cryptocurrency", crypto_df['symbol'].unique())
+
+    # Filter data for selected crypto
+    crypto_data = crypto_df[crypto_df['symbol'] == selected_crypto]
+
+    # Ensure datetime is in datetime format
+    crypto_data['datetime'] = pd.to_datetime(crypto_data['datetime'])
+
+    # Sort by datetime to ensure correct rolling calculations
+    crypto_data = crypto_data.sort_values('datetime')
+
+    # Calculate Moving Averages
+    crypto_data['7-Day SMA'] = crypto_data['close'].rolling(window=7).mean()
+    crypto_data['30-Day SMA'] = crypto_data['close'].rolling(window=30).mean()
+    crypto_data['EMA (20)'] = crypto_data['close'].ewm(span=20, adjust=False).mean()
+
+    # Plotting
+    st.line_chart(crypto_data.set_index('datetime')[['close', '7-Day SMA', '30-Day SMA', 'EMA (20)']])
+        
+elif selected == "Tech Stocks":
+    st.title("💻 Tech Stocks Analysis")
+
+    # Dropdown to select a specific tech stock
+    selected_stock = st.selectbox("Select Tech Stock", stocks_df['symbol'].unique())
+
+    # Filter data for the selected stock
+    stock_data = stocks_df[stocks_df['symbol'] == selected_stock]
+
+    # Ensure datetime is in datetime format
+    stock_data['datetime'] = pd.to_datetime(stock_data['datetime'])
+    stock_data = stock_data.sort_values('datetime')
     
+    # ✅ 1. Key Metrics (KPIs)
+    latest_data = stock_data.iloc[-1]
+    price_change = ((latest_data['close'] - stock_data.iloc[-2]['close']) / stock_data.iloc[-2]['close']) * 100
+
+    st.subheader("📈 Key Metrics")
+    col1, col2, col3 = st.columns(3)
+    col1.metric(f"{selected_stock} Price", f"${latest_data['close']:.2f}", f"{price_change:.2f}%")
+    col2.metric("24H Volume", f"{latest_data['volume'] / 1e6:.2f}M")
+    col3.metric("All-Time High", f"${stock_data['close'].max():.2f}")
+    
+    # ✅ 2. Price Trend Analysis
+    st.subheader("📊 Price Trend Over Time")
+    st.line_chart(stock_data.set_index('datetime')['close'])
+
+    # ✅ 3. Moving Averages
+    st.subheader("📉 Moving Averages (7 & 30 Day)")
+
+    stock_data['7-Day SMA'] = stock_data['close'].rolling(window=7).mean()
+    stock_data['30-Day SMA'] = stock_data['close'].rolling(window=30).mean()
+
+    st.line_chart(stock_data.set_index('datetime')[['close', '7-Day SMA', '30-Day SMA']])
+    
+    # ✅ 4. Performance Comparison of All Tech Stocks
+    st.subheader("📊 Stock Performance Comparison")
+
+    # Calculate % change over the last 30 days for all stocks
+    performance = stocks_df.groupby('symbol').apply(
+        lambda x: ((x['close'].iloc[-1] - x['close'].iloc[0]) / x['close'].iloc[0]) * 100
+    ).reset_index(name='30-Day Change (%)')
+
+    st.bar_chart(performance.set_index('symbol')['30-Day Change (%)'])
+    
+elif selected == "Market Insights":
+    st.title("Market Insights")
+    
+    st.subheader("📰 Market Sentiment Analysis")
+
+    # User Input for Query
+    query = st.selectbox("Select a Stock/Crypto Symbol:", combined_df['symbol'].unique())
+    #query = st.text_input("Enter a Stock/Crypto Symbol (e.g., BTC, AAPL, ETH):", "BTC")
+
+    # Fetch News
+    if st.button("Get Market Sentiment"):
+        articles = fetch_news(query)
+
+        if articles:
+            # Process news articles
+            sentiments = []
+            for article in articles:
+                #sentiment_score = analyze_sentiment(article['title'] + " " + article['description'])
+                sentiment_score = analyze_sentiment((article.get('title') or '') + " " + (article.get('description') or ''))
+                sentiments.append({
+                    'title': article['title'],
+                    'description': article['description'],
+                    'sentiment_score': sentiment_score
+                })
+
+            # Convert to DataFrame
+            df = pd.DataFrame(sentiments)
+
+            # Calculate Overall Sentiment
+            overall_sentiment = df['sentiment_score'].mean()
+
+            # Display Sentiment Result
+            sentiment_label = "Bullish 📈" if overall_sentiment > 0 else "Bearish 📉" if overall_sentiment < 0 else "Neutral ⚖️"
+            st.metric(label="Market Sentiment", value=sentiment_label, delta=f"{overall_sentiment * 100:.2f}%")
+
+            # Show News Headlines
+            st.subheader("🗞️ Recent Headlines")
+            for i, row in df.iterrows():
+                st.write(f"**{row['title']}**")
+                st.write(row['description'])
+                st.write(f"Sentiment Score: {row['sentiment_score']:.2f}")
+                st.write("---")
+        else:
+            st.warning("No news articles found for this query.")

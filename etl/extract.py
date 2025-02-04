@@ -3,6 +3,7 @@ import pandas as pd
 import os
 from dotenv import load_dotenv
 import psycopg2
+from textblob import TextBlob
 
 # Load variables from .env file
 load_dotenv()
@@ -41,3 +42,10 @@ def get_data_from_db(query):
     df = pd.read_sql_query(query, conn)
     conn.close()
     return df
+
+# Function to fetch news
+def fetch_news(query):
+    url = f"https://newsapi.org/v2/everything?q={query}&sortBy=publishedAt&language=en&apiKey={os.getenv('news_api_key')}"
+    response = requests.get(url)
+    data = response.json()
+    return data['articles']
