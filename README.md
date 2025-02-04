@@ -5,7 +5,7 @@ The goal is to pull in data from the Twelve Data API to obtain some stocks and c
 
 ---
 ### To Run ETL pipeline:
-- on the root folder, run `python -m scripts.run_etl`. The scheduler should run hourly.
+- On the root folder, run `python -m scripts.run_etl`. The scheduler should run hourly.
 
 ## Requirements
 
