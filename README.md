@@ -2,7 +2,7 @@
 
 ## Project Goal
 
-This project aims to extract financial data from the Twelve Data API, process it into a single source of truth (SSOT), store it in a PostgreSQL database, and visualize insights using Streamlit.
+This project aims to extract financial data from the Twelve Data API, process it into a single source of truth (SSOT), store it in a PostgreSQL database, and visualize insights using Streamlit (Scroll down for images).
 
 ## Use Case
 
