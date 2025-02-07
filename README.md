@@ -8,7 +8,7 @@ This project aims to extract financial data from the Twelve Data API, process it
 
 Traders, analysts, and investors need real-time financial data to make informed decisions. This application demonstrates the ETL process and visualization for stock and cryptocurrency markets. By consolidating data into a structured  database, users can analyse trends, compare assets, and generate insights efficiently. The Streamlit dashboard provides an intuitive interface for real-time analysis.
 
-While there are many established applications  that already offer similar and far more advanced functionalities, this project is not about competition. Instead, it serves as a proof of concept — a functional demonstration of how financial data can be gathered, processed, and used for investment decision-making.
+While there are many established applications  that already offer similar and far more advanced functionalities, this project is not about competition. Instead, it serves as a proof of concept — a functional demonstration of how financial data can be gathered, processed, and used for investment decision making.
 
 ## Data Flow Process
 
