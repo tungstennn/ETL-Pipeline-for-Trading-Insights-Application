@@ -94,6 +94,13 @@ streamlit run app.py
 
 ## Screenshots
 
+### Page 1 of streamlit application
 ![Page 1 of Application](images/market_overview.png)
+### Page 2 of streamlit application
+![Page 2 of Application](images/crypto_trends.png)
+### Page 3 of streamlit application
+![Page 3 of Application](images/tech_stocks.png)
+### Page 4 of streamlit application
+![Page 4 of Application](images/market_insights.png)
 
 
