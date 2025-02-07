@@ -22,16 +22,18 @@ load_dotenv()
 with st.sidebar:
     selected = option_menu(
         menu_title="Dashboard",
-        options=["Market Overview", "Crypto Trends", "Tech Stocks", "Market Insights", "Real-Time Data"],
-        icons=["house", "bar-chart-line", "cpu", "pie-chart", "activity"],
+        options=["Market Overview", "Crypto Trends", "Tech Stocks", "Market Insights"],
+        icons=["house", "bar-chart-line", "cpu", "pie-chart"],
         menu_icon="cast",
         default_index=0,
     )
 
-stocks_df = get_data_from_db("SELECT * FROM abdirahmans_market_data WHERE (volume is not null) AND (symbol NOT LIKE '%/GBP');")
-crypto_df = get_data_from_db("SELECT * FROM abdirahmans_market_data where (volume is null) AND (symbol NOT LIKE '%/GBP');")
-combined_df = get_data_from_db("SELECT * FROM abdirahmans_market_data WHERE (symbol NOT LIKE '%/GBP');")
+stocks_df = get_data_from_db("SELECT datetime, open, high, low, close, volume, symbol FROM abdirahmans_market_data WHERE (volume is not null) AND (symbol NOT LIKE '%/GBP') ORDER BY datetime;")
+crypto_df = get_data_from_db("SELECT datetime, open, high, low, close, volume, symbol FROM abdirahmans_market_data where (volume is null) AND (symbol NOT LIKE '%/GBP') ORDER BY datetime;")
+combined_df = get_data_from_db("SELECT datetime, open, high, low, close, volume, symbol FROM abdirahmans_market_data WHERE (symbol NOT LIKE '%/GBP') ORDER BY datetime;")
 # Ensure datetime column is in datetime format
+stocks_df['datetime'] = pd.to_datetime(stocks_df['datetime'])
+crypto_df['datetime'] = pd.to_datetime(crypto_df['datetime'])
 combined_df['datetime'] = pd.to_datetime(combined_df['datetime'])
 
 if selected == "Market Overview":
@@ -109,7 +111,7 @@ elif selected == "Crypto Trends":
 
     # Display Metrics for Each Crypto
     for symbol in crypto_symbols:
-        crypto = latest_data[latest_data['symbol'] == symbol].iloc[0]
+        crypto = latest_data[latest_data['symbol'] == symbol].iloc[-1]
         price_change = ((crypto['close'] - crypto['open']) / crypto['open']) * 100
 
         col1, col3 = st.columns(2)
@@ -152,10 +154,10 @@ elif selected == "Crypto Trends":
     # Calculate Moving Averages
     crypto_data['7-Day SMA'] = crypto_data['close'].rolling(window=7).mean()
     crypto_data['30-Day SMA'] = crypto_data['close'].rolling(window=30).mean()
-    crypto_data['EMA (20)'] = crypto_data['close'].ewm(span=20, adjust=False).mean()
+    #crypto_data['EMA (20)'] = crypto_data['close'].ewm(span=20, adjust=False).mean()
 
     # Plotting
-    st.line_chart(crypto_data.set_index('datetime')[['close', '7-Day SMA', '30-Day SMA', 'EMA (20)']])
+    st.line_chart(crypto_data.set_index('datetime')[['close', '7-Day SMA', '30-Day SMA']])
         
 elif selected == "Tech Stocks":
     st.title("💻 Tech Stocks Analysis")
@@ -180,10 +182,7 @@ elif selected == "Tech Stocks":
     col2.metric("24H Volume", f"{latest_data['volume'] / 1e6:.2f}M")
     col3.metric("All-Time High", f"${stock_data['close'].max():.2f}")
     
-    # 2. Price Trend Analysis
-    st.subheader("📊 Price Trend Over Time")
-    st.line_chart(stock_data.set_index('datetime')['close'])
-
+    
     # 3. Moving Averages
     st.subheader("📉 Moving Averages (7 & 30 Day)")
 
@@ -192,6 +191,10 @@ elif selected == "Tech Stocks":
 
     st.line_chart(stock_data.set_index('datetime')[['close', '7-Day SMA', '30-Day SMA']])
     
+    # 2. Price Trend Analysis
+    st.subheader("📊 Price Trend Over Time")
+    st.line_chart(stock_data.set_index('datetime')['close'])
+
     # 4. Performance Comparison of All Tech Stocks
     st.subheader("📊 Stock Performance Comparison")
 
@@ -245,4 +248,4 @@ elif selected == "Market Insights":
                 st.write(f"Sentiment Score: {row['sentiment_score']:.2f}")
                 st.write("---")
         else:
-            st.warning("No news articles found for this query.")
+            st.warning("No news articles found for this query.")           # Hire Train Deploy
