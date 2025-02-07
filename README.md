@@ -94,6 +94,6 @@ streamlit run app.py
 
 ## Screenshots
 
-*(Add relevant screenshots here to demonstrate project functionality.)*
+![Page 1 of Application](images/market_overview.png)
 
 
