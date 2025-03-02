@@ -15,10 +15,10 @@ While there are many established applications  that already offer similar and fa
 ```mermaid
 graph TD
     A[Twelve Data API] -->|API Call| B{New Data?}
-    B -- Yes --> C[Pandas DataFrame]
+    B -- Yes --> C[Extract into Pandas DataFrame]
     B -- No --> G[Wait for Next Interval]
     C --> D[Transformations]
-    D --> E[Insert into PostgreSQL Table]
+    D --> E[Load into PostgreSQL Table]
     E --> F[Retrieve Data from SQL]
     F --> H[Plots]
     H --> I[Streamlit Visualization]
