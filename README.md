@@ -1,4 +1,4 @@
-# Minimal Viable Product (MVP) Overview
+# Capstone Project
 
 ## Project Goal
 
